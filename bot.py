@@ -14,17 +14,32 @@ app = Client(
 )
 
 gif = [
-    'https://te.legra.ph/file/a1b3d4a7b5fce249902f7.mp4',
-    'https://te.legra.ph/file/0c855143a4039108df602.mp4',
-    'https://te.legra.ph/file/d7f3f18a92e6f7add8fcd.mp4',
-    'https://te.legra.ph/file/9e334112ee3a4000c4164.mp4',
-    'https://te.legra.ph/file/652fc39ae6295272699c6.mp4',
-    'https://te.legra.ph/file/702ca8761c3fd9c1b91e8.mp4'
+    # Giphy Links
+    "https://media.giphy.com/media/26BRuo6sLetdllPAQ/giphy.mp4",  # Abstract Lights
+    "https://media.giphy.com/media/l1J9EdzfOSgfyueLm/giphy.mp4",  # Vibrant Welcome
+    "https://media.giphy.com/media/xUPGGDNsLvqsBOhuU0/giphy.mp4",  # Glowing Digital Effect
+    "https://media.giphy.com/media/xT39CXg70nNS0MFNLy/giphy.mp4",  # Neon Lights Animation
+    "https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.mp4",  # Abstract Futuristic Animation
+    "https://media.giphy.com/media/1xkUkkkg3pQnfp1yvm/giphy.mp4",  # Modern Neon Text
+    "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.mp4",  # Colorful Particles
+    "https://media.giphy.com/media/3ohhwF34cGDoFFhRfy/giphy.mp4",  # Elegant Animation
+    "https://media.giphy.com/media/3o6ZtpxSZbQRRnwCKQ/giphy.mp4",  # Shimmering Stars
+    # Tenor Links
+    "https://tenor.com/view/welcome-gif-19366855",  # Animated Welcome
+    "https://tenor.com/view/hello-welcome-neon-lights-gif-20482452",  # Neon Welcome
+    "https://tenor.com/view/hi-hello-welcome-gif-16952349",  # Casual Greeting
+    "https://tenor.com/view/hi-there-welcome-animated-text-gif-23001649",  # Bold Welcome Animation
+    "https://tenor.com/view/galaxy-glow-welcome-gif-19366859",  # Galaxy Glow
+    "https://tenor.com/view/abstract-welcome-lights-gif-20598340",  # Abstract Welcome Animation
+    "https://tenor.com/view/hello-hi-welcome-colorful-gif-16980934",  # Colorful Text Animation
+    "https://tenor.com/view/neon-particles-gif-22875045",  # Futuristic Particles
+    "https://tenor.com/view/fancy-welcome-gif-21379121",  # Fancy Greeting
+    "https://tenor.com/view/welcome-neon-flash-gif-21157980",  # Flashy Neon Effect
 ]
 
 START_TIME = time.time()
 
-# Helper function for uptime
+# Helper function to format uptime
 def get_readable_time(seconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
@@ -35,27 +50,29 @@ def get_readable_time(seconds: int) -> str:
 
 @app.on_chat_join_request(filters.group | filters.channel & ~filters.private)
 async def approve(_, m: Message):
-    op = m.chat
-    kk = m.from_user
+    chat = m.chat
+    user = m.from_user
     try:
-        add_group(m.chat.id)
-        await app.approve_chat_join_request(op.id, kk.id)
-        img = random.choice(gif)
+        add_group(chat.id)
+        await app.approve_chat_join_request(chat.id, user.id)
+        gif_link = random.choice(gif)
         await app.send_video(
-            kk.id,
-            img,
-            f"**✨ Hello {m.from_user.mention}!**\n"
-            f"**🌟 Welcome to {m.chat.title}!**\n\n"
-            f"__Powered by: @DONATE_ARMY_BOTS__"
+            user.id,
+            gif_link,
+            caption=(
+                f"**✨ Hello {user.mention}!**\n"
+                f"**🌟 Welcome to {chat.title}!**\n\n"
+                f"__Powered by: @DONATE_ARMY_BOTS__"
+            )
         )
-        add_user(kk.id)
+        add_user(user.id)
     except errors.PeerIdInvalid:
         print("User hasn't started the bot (group join request failed).")
     except Exception as err:
-        print(str(err))
+        print(f"Error: {str(err)}")
 
 @app.on_message(filters.command("start"))
-async def op(_, m: Message):
+async def start(_, m: Message):
     try:
         await app.get_chat_member(cfg.CHID, m.from_user.id)
         if m.chat.type == enums.ChatType.PRIVATE:
@@ -90,7 +107,11 @@ async def op(_, m: Message):
                 ]
             )
             add_group(m.chat.id)
-            await m.reply_text(f"**🦊 Hello {m.from_user.first_name}!**\n**✨ Write to me privately for more details.**", reply_markup=keyboard)
+            await m.reply_text(
+                f"**🦊 Hello {m.from_user.first_name}!**\n"
+                f"**✨ Write to me privately for more details.**",
+                reply_markup=keyboard
+            )
         print(f"{m.from_user.first_name} started your bot!")
     except UserNotParticipant:
         keyboard = InlineKeyboardMarkup(
@@ -139,7 +160,7 @@ async def chk(_, cb: CallbackQuery):
 async def dbtool(_, m: Message):
     xx = all_users()
     x = all_groups()
-    tot = int(xx + x)
+    total = int(xx + x)
     uptime = get_readable_time(int(time.time() - START_TIME))
     start_time = time.perf_counter()
     await asyncio.sleep(0.1)
@@ -151,7 +172,7 @@ async def dbtool(_, m: Message):
 
 **🙋‍♂️ Users:** `{xx}`
 **👥 Groups:** `{x}`
-**🚧 Total Users & Groups:** `{tot}`
+**🚧 Total Users & Groups:** `{total}`
 
 **⏳ Uptime:** `{uptime}`
 **📶 Ping:** `{ping}ms`
@@ -161,15 +182,15 @@ async def dbtool(_, m: Message):
 @app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
 async def bcast(_, m: Message):
     allusers = users
-    lel = await m.reply_text("`⚡️ Processing...`")
+    msg = await m.reply_text("`⚡️ Processing Broadcast...`")
     success, failed, deactivated, blocked = 0, 0, 0, 0
-    for usrs in allusers.find():
+    for usr in allusers.find():
         try:
-            userid = usrs["user_id"]
+            userid = usr["user_id"]
             await m.reply_to_message.copy(int(userid))
             success += 1
-        except FloodWait as ex:
-            await asyncio.sleep(ex.value)
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
         except errors.InputUserDeactivated:
             deactivated += 1
             remove_user(userid)
@@ -177,11 +198,11 @@ async def bcast(_, m: Message):
             blocked += 1
         except Exception:
             failed += 1
-    await lel.edit(
-        f"✅ Successfully sent to `{success}` users.\n"
-        f"❌ Failed to send to `{failed}` users.\n"
-        f"👾 Found `{blocked}` blocked users.\n"
-        f"👻 Found `{deactivated}` deactivated users."
+    await msg.edit(
+        f"**✅ Successfully sent to:** `{success}`\n"
+        f"**❌ Failed to send to:** `{failed}`\n"
+        f"**👾 Blocked users:** `{blocked}`\n"
+        f"**👻 Deactivated users:** `{deactivated}`"
     )
 
 print("I'm Alive Now!")
