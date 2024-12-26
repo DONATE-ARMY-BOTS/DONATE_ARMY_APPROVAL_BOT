@@ -99,7 +99,7 @@ async def chk(_, cb : CallbackQuery):
                 [
                     [
                         InlineKeyboardButton("🗯 Channel", url="https://t.me/DONATE_ARMY_BOTS"),
-                        InlineKeyboardButton("💬 Support", url="https://t.me/vj_bot_disscussion")
+                        InlineKeyboardButton("💬 Support", url="https://t.me/DONATE_ARMY_BOTS_SUPPORT_CHAT")
                     ],[
                         InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPROVAL_BOT?startgroup")
                     ]
