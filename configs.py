@@ -8,6 +8,6 @@ class Config:
     FSUB = getenv("FSUB", "DONATE_ARMY_BOTS")
     CHID = int(getenv("CHID", "-1002218656973"))
     SUDO = list(map(int, getenv("SUDO", "5347809540").split()))
-    MONGO_URI = getenv("MONGO_URI", "mongodb+srv://DONATE_ARMY:bgmi_009@cluster0.erxioab.mongodb.net/?retryWrites=true&w=majority")
+    MONGO_URI = getenv("MONGO_URI", "")
     
 cfg = Config()
