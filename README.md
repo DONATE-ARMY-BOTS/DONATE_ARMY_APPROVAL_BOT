@@ -1,7 +1,7 @@
 # DONATE_ARMY_APPROVAL_BOT
 👾 Hey I'll Accept telegram join requests. Easy to use and simple.
 
-## 🚀 Demo Bot
+## 🤖 OWNER CONTACT
 - [OWNER CONTACT](https://telegram.me/DONATE_OWNER_BOT)
 
 <h2>〽️ Deploy Me </h2> 
