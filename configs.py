@@ -3,11 +3,11 @@ from os import path, getenv
 
 class Config:
     API_ID = int(getenv("API_ID", ""))
-    API_HASH = getenv("API_HASH", "")
-    BOT_TOKEN = getenv("BOT_TOKEN", "")
-    FSUB = getenv("FSUB", "DONATE_ARMY_BOTS")
-    CHID = int(getenv("CHID", "-1002218656973"))
-    SUDO = list(map(int, getenv("SUDO", "5347809540").split()))
+    API_HASH = int(getenv("API_HASH", ""))
+    BOT_TOKEN = int(getenv("BOT_TOKEN", ""))
+    FSUB = int(getenv("FSUB", ""))
+    CHID = int(getenv("CHID", ""))
+    SUDO = list(map(int, getenv("SUDO", "").split()))
     MONGO_URI = getenv("MONGO_URI", "")
     
 cfg = Config()
