@@ -1,6 +1,6 @@
-pyrogram
-TgCrypto
-pymongo[srv]
+pyrogram==2.0.106
+tgcrypto==1.2.3
+pymongo==4.6.0
 Flask==2.2.2
 gunicorn==20.1.0
 aiohttp
