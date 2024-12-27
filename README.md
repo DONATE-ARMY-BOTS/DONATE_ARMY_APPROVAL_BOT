@@ -2,7 +2,7 @@
 👾 Hey I'll Accept telegram join requests. Easy to use and simple.
 
 ## 🚀 Demo Bot
-- [Demo Bot](https://telegram.me/DONATE_ARMY_APPROVAL_BOT)
+- [OWNER CONTACT](https://telegram.me/DONATE_OWNER_BOT)
 
 <h2>〽️ Deploy Me </h2> 
   
