@@ -62,7 +62,7 @@ async def approve(_, m: Message):
             caption=(
                 f"**✨ Hello {user.mention}!**\n"
                 f"**🌟 Welcome to {chat.title}!**\n\n"
-                f"__Powered by: @DONATE_ARMY_BOTS__"
+                f"__Powered by: @DONATE_ARMY_BOTS__"hai
             )
         )
         add_user(user.id)
@@ -83,7 +83,7 @@ async def start(_, m: Message):
                         InlineKeyboardButton("💬 Support", url="https://t.me/DONATE_ARMY_BOTS_SUPPORT_CHAT")
                     ],
                     [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPROVAL_BOT?startgroup")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPR0VAL_BOT?startgroup")
                     ]
                 ]
             )
@@ -102,7 +102,7 @@ async def start(_, m: Message):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("💁‍♂️ Start me privately 💁‍♂️", url="https://t.me/DONATE_ARMY_APPROVAL_BOT?startgroup")
+                        InlineKeyboardButton("💁‍♂️ Start me privately 💁‍♂️", url="https://t.me/DONATE_ARMY_APPR0VAL_BOT?startgroup")
                     ]
                 ]
             )
@@ -139,7 +139,7 @@ async def chk(_, cb: CallbackQuery):
                         InlineKeyboardButton("💬 Support", url="https://t.me/DONATE_ARMY_BOTS_SUPPORT_CHAT")
                     ],
                     [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPROVAL_BOT?startgroup")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPR0VAL_BOT?startgroup")
                     ]
                 ]
             )
