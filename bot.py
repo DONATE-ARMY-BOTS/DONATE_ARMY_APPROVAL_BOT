@@ -7,11 +7,10 @@ from configs import cfg
 import random, asyncio, time
 
 app = Client(
-    "approver",
+    "DONATE_ARMY_APPROVE",
     api_id=cfg.API_ID,
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
-)
 
 gif = [
     # Giphy Links
@@ -39,42 +38,41 @@ gif = [
 
 START_TIME = time.time()
 
-# Helper function to format uptime
 def get_readable_time(seconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     return f"{days}d {hours}h {minutes}m {seconds}s"
 
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Main Process ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@app.on_chat_join_request(filters.group | filters.channel & ~filters.private)
-async def approve(_, m: Message):
-    chat = m.chat
-    user = m.from_user
-    try:
-        add_group(chat.id)
-        await app.approve_chat_join_request(chat.id, user.id)
-        gif_link = random.choice(gif)
-        await app.send_video(
-            user.id,
-            gif_link,
-            caption=(
-                f"**✨ Hello {user.mention}!**\n"
-                f"**🌟 Welcome to {chat.title}!**\n\n"
-                f"__Powered by: @DONATE_ARMY_BOTS__"hai
-            )
-        )
-        add_user(user.id)
-    except errors.PeerIdInvalid:
-        print("User hasn't started the bot (group join request failed).")
-    except Exception as err:
-        print(f"Error: {str(err)}")
+async def check_all_channels(client, user_id):
+    for channel in cfg.REQUIRED_CHANNELS:
+        try:
+            await client.get_chat_member(channel, user_id)
+        except UserNotParticipant:
+            return False, channel
+        except Exception as e:
+            print(f"Error checking channel {channel}: {e}")
+            return False, channel
+    return True, None
 
 @app.on_message(filters.command("start"))
 async def start(_, m: Message):
     try:
-        await app.get_chat_member(cfg.CHID, m.from_user.id)
+        is_member, missing_channel = await check_all_channels(app, m.from_user.id)
+        if not is_member:
+            keyboard = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("🍀 Join Here 🍀", url=f"https://t.me/{missing_channel.lstrip('@')}")],
+                    [InlineKeyboardButton("✅ Check Again ✅", "chk")]
+                ]
+            )
+            await m.reply_text(
+                f"**⚠️ Access Denied! ⚠️**\n\n"
+                f"**You must join {missing_channel} to use me. If you've joined, click 'Check Again'.**",
+                reply_markup=keyboard
+            )
+            return
+
         if m.chat.type == enums.ChatType.PRIVATE:
             keyboard = InlineKeyboardMarkup(
                 [
@@ -113,14 +111,98 @@ async def start(_, m: Message):
                 reply_markup=keyboard
             )
         print(f"{m.from_user.first_name} started your bot!")
-    except UserNotParticipant:
-        keyboard = InlineKeyboardMarkup(
-            [
+    except Exception as e:
+        print(f"Error in start command: {e}")
+
+@app.on_callback_query(filters.regex("chk"))
+async def chk(_, cb: CallbackQuery):
+    try:
+        is_member, missing_channel = await check_all_channels(app, cb.from_user.id)
+        if not is_member:
+            await cb.message.edit_text(
+                f"**⚠️ Access Denied! ⚠️**\n\n"
+                f"**You must join {missing_channel} to use me. If you've joined, click 'Check Again'.**"
+            )
+            return
+
+        if cb.message.chat.type == enums.ChatType.PRIVATE:
+            keyboard = InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton("🍀 Check Again 🍀", "chk")
+                    [
+                        InlineKeyboardButton("🗯 Channel", url="https://t.me/DONATE_ARMY_BOTS"),
+                        InlineKeyboardButton("💬 Support", url="https://t.me/DONATE_ARMY_BOTS_SUPPORT_CHAT")
+                    ],
+                    [
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/DONATE_ARMY_APPR0VAL_BOT?startgroup")
+                    ]
                 ]
-            ]
-        )
+            )
+            add_user(cb.from_user.id)
+            await cb.message.edit_text(
+                f"**🦊 Hello {cb.from_user.mention}!**\n"
+                f"**🌟 I'm an Auto-Approval Bot for Admin Join Requests.**\n"
+                f"**✨ Add me to your chat and promote me to admin with 'Add Members' permission.**\n\n"
+                f"__Powered by: @DONATE_ARMY_BOTS__",
+                reply_markup=keyboard,
+                disable_web_page_preview=True
+            )
+        print(f"{cb.from_user.first_name} started your bot!")
+    except Exception as e:
+        print(f"Error in check callback: {e}")
+
+@app.on_message(filters.command("stats") & filters.user(cfg.SUDO))
+async def dbtool(_, m: Message):
+    xx = all_users()
+    x = all_groups()
+    total = int(xx + x)
+    uptime = get_readable_time(int(time.time() - START_TIME))
+    start_time = time.perf_counter()
+    await asyncio.sleep(0.1)
+    end_time = time.perf_counter()
+    ping = round((end_time - start_time) * 1000, 2)
+    await m.reply_text(
+        f"""
+**🍀 Chat Statistics 🍀**
+
+**🙋‍♂️ Users:** `{xx}`
+**👥 Groups:** `{x}`
+**🚧 Total Users & Groups:** `{total}`
+
+**⏳ Uptime:** `{uptime}`
+**📶 Ping:** `{ping}ms`
+"""
+    )
+
+@app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
+async def bcast(_, m: Message):
+    allusers = users
+    msg = await m.reply_text("`⚡️ Processing Broadcast...`")
+    success, failed, deactivated, blocked = 0, 0, 0, 0
+
+    for usr in allusers.find():
+        try:
+            userid = usr["user_id"]
+            await m.reply_to_message.copy(int(userid))
+            success += 1
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+        except errors.InputUserDeactivated:
+            deactivated += 1
+            remove_user(userid)
+        except errors.UserIsBlocked:
+            blocked += 1
+        except Exception:
+            failed += 1
+
+    await msg.edit(
+        f"**✅ Successfully sent to:** `{success}`\n"
+        f"**❌ Failed to send to:** `{failed}`\n"
+        f"**👾 Blocked users:** `{blocked}`\n"
+        f"**👻 Deactivated users:** `{deactivated}`"
+    )
+
+print("Bot is now running!")
+app.run()
         await m.reply_text(
             f"**⚠️ Access Denied! ⚠️**\n\n"
             f"**Please join @{cfg.FSUB} to use me. If you've joined, click the 'Check Again' button.**",
